@@ -106,11 +106,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1768504213,
-        "narHash": "sha256-8zXMXQC+oZJSAUqboSujn8gMNFLENgTNaM8aomDtf9g=",
+        "lastModified": 1768508067,
+        "narHash": "sha256-7QOLFSmijfV/0OYXSNqpjbV1gRHOik7TS3o63bmSvs8=",
         "owner": "anna-oake",
         "repo": "pebble.nix",
-        "rev": "b293af4aea26a40d368629768f3d4e1d64859b18",
+        "rev": "3b651faeb431826482bd7bf3a1d925ff0ec98d1a",
         "type": "github"
       },
       "original": {

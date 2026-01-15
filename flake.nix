@@ -36,7 +36,7 @@
               set -euo pipefail
               exec ${pebble.packages.${system}.pebble-tool}/bin/pebble install "${
                 self.packages.${system}.default
-              }/${name}.pbw" --emulator ${emulatorTarget} "$@"
+              }/${name}.pbw" --emulator ${emulatorTarget} --logs "$@"
             ''
           );
         };

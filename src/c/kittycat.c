@@ -1,60 +1,74 @@
 #include <pebble.h>
 
-static Window *s_window;
-static TextLayer *s_text_layer;
+static Window* s_main_window;
+static TextLayer* s_time_layer;
 
-static void prv_select_click_handler(ClickRecognizerRef recognizer, void *context) {
-  text_layer_set_text(s_text_layer, "Select");
+static void update_time() {
+  // get a tm (time) structure
+  time_t temp = time(NULL);
+  struct tm* tick_time = localtime(&temp);
+
+  // write current time (hrs&mins) into a buffer
+  static char s_buffer[8];
+  strftime(s_buffer, sizeof(s_buffer), clock_is_24h_style() ? "%H:%M" : "%I:%M", tick_time);
+
+  // set textlayer text to string buffer
+  text_layer_set_text(s_time_layer, s_buffer);
 }
 
-static void prv_up_click_handler(ClickRecognizerRef recognizer, void *context) {
-  text_layer_set_text(s_text_layer, "Up");
+static void tick_handler(struct tm* tick_time, TimeUnits units_changed) {
+  update_time();
 }
 
-static void prv_down_click_handler(ClickRecognizerRef recognizer, void *context) {
-  text_layer_set_text(s_text_layer, "Down");
-}
-
-static void prv_click_config_provider(void *context) {
-  window_single_click_subscribe(BUTTON_ID_SELECT, prv_select_click_handler);
-  window_single_click_subscribe(BUTTON_ID_UP, prv_up_click_handler);
-  window_single_click_subscribe(BUTTON_ID_DOWN, prv_down_click_handler);
-}
-
-static void prv_window_load(Window *window) {
-  Layer *window_layer = window_get_root_layer(window);
+static void main_window_load(Window* window) {
+  // get window info
+  Layer* window_layer = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(window_layer);
 
-  s_text_layer = text_layer_create(GRect(0, 72, bounds.size.w, 20));
-  text_layer_set_text(s_text_layer, "Press a button");
-  text_layer_set_text_alignment(s_text_layer, GTextAlignmentCenter);
-  layer_add_child(window_layer, text_layer_get_layer(s_text_layer));
+  // create textlayer
+  s_time_layer = text_layer_create(
+    GRect(0, 58, bounds.size.w, 50)
+  );
+
+  // textlayer elements
+  text_layer_set_background_color(s_time_layer, GColorClear);
+  text_layer_set_font(s_time_layer, fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD));
+  text_layer_set_text_alignment(s_time_layer, GTextAlignmentCenter);
+
+  // add textlayer to Window layer
+  layer_add_child(window_layer, text_layer_get_layer(s_time_layer));
 }
 
-static void prv_window_unload(Window *window) {
-  text_layer_destroy(s_text_layer);
+static void main_window_unload(Window* window) {
+  text_layer_destroy(s_time_layer);
 }
 
-static void prv_init(void) {
-  s_window = window_create();
-  window_set_click_config_provider(s_window, prv_click_config_provider);
-  window_set_window_handlers(s_window, (WindowHandlers) {
-    .load = prv_window_load,
-    .unload = prv_window_unload,
+static void init() {
+  // create window element
+  s_main_window = window_create();
+
+  // set handlers to manage window elements
+  window_set_window_handlers(s_main_window, (WindowHandlers) {
+    .load = main_window_load,
+      .unload = main_window_unload
   });
-  const bool animated = true;
-  window_stack_push(s_window, animated);
+
+  // display window on watch
+  window_stack_push(s_main_window, true);
+
+  // register TickTimerService
+  tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
+
+  // time is displayed correctly at init
+  update_time();
 }
 
-static void prv_deinit(void) {
-  window_destroy(s_window);
+static void deinit() {
+  window_destroy(s_main_window);
 }
 
 int main(void) {
-  prv_init();
-
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Done initializing, pushed window: %p", s_window);
-
+  init();
   app_event_loop();
-  prv_deinit();
+  deinit();
 }
