@@ -41,29 +41,9 @@
           );
         };
 
-        packages = {
-          default = (
-            pebble.buildPebbleApp.${system} {
-              inherit (packageJson) name version;
-              type = "watchface";
-              src = ./.;
-
-              description = "pretty kitty watchface";
-
-              releaseNotes = ''
-                a cat now lives inside your watch.
-                good job!
-              '';
-
-              sourceUrl = "https://github.com/maeve-oake/pebble-kittycat";
-
-              screenshots = {
-                all = [
-                  "assets/screenshot.png"
-                ];
-              };
-            }
-          );
+        packages.default = pebble.buildPebbleApp.${system} {
+          inherit (packageJson) name version;
+          src = ./.;
         };
 
         devShell = pebble.pebbleEnv.${system} {

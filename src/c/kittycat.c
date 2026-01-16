@@ -2,6 +2,9 @@
 
 static Window* s_main_window;
 static TextLayer* s_time_layer;
+static GFont s_time_font;
+static BitmapLayer *s_kitty_layer;
+static GBitmap *s_kitty_bitmap;
 
 static void update_time() {
   // get a tm (time) structure
@@ -25,14 +28,28 @@ static void main_window_load(Window* window) {
   Layer* window_layer = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(window_layer);
 
+  // create gbitmap
+  s_kitty_bitmap = gbitmap_create_with_resource(RESOURCE_ID_KITTY);
+
+  // create bitmap layer
+  s_kitty_layer = bitmap_layer_create(bounds);
+
+  // set the kitty onto the layer, then add to window
+  bitmap_layer_set_bitmap(s_kitty_layer, s_kitty_bitmap);
+  layer_add_child(window_layer, bitmap_layer_get_layer(s_kitty_layer));
+  bitmap_layer_set_
+
+  // create gfont
+  s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_PERFECT_DOS_48));
+
   // create textlayer
   s_time_layer = text_layer_create(
-    GRect(0, 58, bounds.size.w, 50)
+    GRect(0, 0, bounds.size.w, 50)
   );
 
   // textlayer elements
   text_layer_set_background_color(s_time_layer, GColorClear);
-  text_layer_set_font(s_time_layer, fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD));
+  text_layer_set_font(s_time_layer, s_time_font);
   text_layer_set_text_alignment(s_time_layer, GTextAlignmentCenter);
 
   // add textlayer to Window layer
@@ -41,6 +58,9 @@ static void main_window_load(Window* window) {
 
 static void main_window_unload(Window* window) {
   text_layer_destroy(s_time_layer);
+  fonts_unload_custom_font(s_time_font);
+  bitmap_layer_destroy(s_kitty_layer);
+  gbitmap_destroy(s_kitty_bitmap);
 }
 
 static void init() {
