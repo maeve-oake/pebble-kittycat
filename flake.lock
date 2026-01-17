@@ -36,19 +36,14 @@
     },
     "pebble": {
       "inputs": {
-        "flake-utils": [
-          "flake-utils"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ]
+        "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1768565972,
-        "narHash": "sha256-Zpvwry425mlObFt80KwbF1ETyE/5ji6gUVuEWui0gHU=",
+        "lastModified": 1768597727,
+        "narHash": "sha256-+bx6LAfr6oJQPkNp7g2fHKbSxzCtQ5XsRLeE2BFz9kI=",
         "owner": "anna-oake",
         "repo": "pebble.nix",
-        "rev": "060fe02828dc1e4139110da716a6d357c40ed349",
+        "rev": "4b58d86412312963eee0b863641191156279e7c9",
         "type": "github"
       },
       "original": {
@@ -60,7 +55,6 @@
     "root": {
       "inputs": {
         "flake-utils": "flake-utils",
-        "nixpkgs": "nixpkgs",
         "pebble": "pebble"
       }
     },
