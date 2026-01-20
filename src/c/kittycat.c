@@ -6,6 +6,7 @@ static GFont s_time_font;
 static BitmapLayer* s_kitty_layer;
 static GBitmap* s_kitty_bitmap;
 static int s_battery_level;
+static TextLayer* s_date_layer;
 static TextLayer* s_battery_layer;
 
 static void update_time() {
@@ -15,10 +16,13 @@ static void update_time() {
 
   // write current time (hrs&mins) into a buffer
   static char s_buffer[8];
+  static char date_buffer[8];
   strftime(s_buffer, sizeof(s_buffer), clock_is_24h_style() ? "%H:%M" : "%I:%M", tick_time);
+  strftime(date_buffer, sizeof(date_buffer), "%d", tick_time);
 
   // set textlayer text to string buffer
   text_layer_set_text(s_time_layer, s_buffer);
+  text_layer_set_text(s_date_layer, date_buffer);
 }
 
 static void tick_handler(struct tm* tick_time, TimeUnits units_changed) {
@@ -61,6 +65,14 @@ static void main_window_load(Window* window) {
 
   layer_add_child(window_layer, text_layer_get_layer(s_time_layer));
 
+  // create date textlayer
+  s_date_layer = text_layer_create(GRect(0, 50, bounds.size.w, 50));
+  text_layer_set_background_color(s_date_layer, GColorClear);
+  text_layer_set_font(s_date_layer, fonts_get_system_font(FONT_KEY_ROBOTO_CONDENSED_21));
+  text_layer_set_text_alignment(s_date_layer, GTextAlignmentRight);
+
+  layer_add_child(window_layer, text_layer_get_layer(s_date_layer));
+
   // create battery layer
   s_battery_layer = text_layer_create(GRect(0, 50, bounds.size.w, 50));
   text_layer_set_background_color(s_battery_layer, GColorClear);
@@ -75,6 +87,7 @@ static void main_window_unload(Window* window) {
   bitmap_layer_destroy(s_kitty_layer);
   gbitmap_destroy(s_kitty_bitmap);
   text_layer_destroy(s_battery_layer);
+  text_layer_destroy(s_date_layer);
 }
 
 static void init() {
